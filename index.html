@@ -479,6 +479,11 @@ small.warn{color:#c0504a;font-weight:700}
   font:700 calc(var(--s)*.8) var(--f);color:var(--ink);text-decoration:none;background:rgba(255,250,242,.92);
   border:2px dashed var(--line);border-radius:999px;padding:.45em 1em;box-shadow:0 2px 6px rgba(0,0,0,.12)}
 .tmore:active{transform:scale(.97)}
+
+/* v8: 改行 — ことばの とちゅう（「2か／い」など）で 行を かえない。ことばの あいだの すき間で かえる */
+body,button,input{word-break:keep-all;overflow-wrap:break-word;line-break:strict}
+.sellcards .card.off{opacity:.6}
+.sellcards .card p{margin:.2em 0;line-height:1.5}
 </style>
 
 <canvas id="c"></canvas>
@@ -621,7 +626,7 @@ DATA.RECIPES = {
   misoshiru: { name: 'みそしる', icon: 'd_miso', price: 450,
     need: { tofu: 1, negi: 1, miso: 1 },
     steps: [['tofu', 'kiru'], ['negi', 'arau'], ['negi', 'kiru'], ['tofu', 'niru'], ['miso', 'mazeru'], [null, 'moru']],
-    hint: 'とうふ と ねぎ を にて、みそ を とかす あたたかい スープ' },
+    hint: 'とうふと ねぎを にて、みそを とかす あたたかい スープ' },
   hotcake: { name: 'ホットケーキ', icon: 'd_hotcake', price: 550,
     need: { flour: 1, egg: 1, milk: 1, butter: 1 },
     steps: [['flour', 'mazeru'], ['egg', 'mazeru'], ['milk', 'mazeru'], ['flour', 'yaku'], ['butter', 'moru']],
@@ -6578,7 +6583,7 @@ W.buildFarm = function (s, w, C) {
   };
   fence(8, 9, 24, 9); fence(8, 27, 24, 27); fence(24, 9, 24, 27); fence(8, 15, 8, 27);
   // 入口の看板
-  E.sign(s, 'はたけ と ぼくじょう', 0.6, 7.6, 1.6, 12, -Math.PI / 2, { bg: '#7fae6b', color: '#fff', fs: 56 });
+  E.sign(s, 'はたけと ぼくじょう', 0.6, 7.6, 1.6, 12, -Math.PI / 2, { bg: '#7fae6b', color: '#fff', fs: 56 });
   // 看板の うらは 木の 板と 2本の 柱（うらから 見ても 板に 見える）
   E.box(s, 0.08, 0.78, 3.3, 7.68, 1.21, 12, '#b58a5e', { tex: 'tx_wood', ts: 1 });
   for (const dz of [-1.5, 1.5]) E.box(s, 0.12, 1.25, 0.12, 7.7, 0, 12 + dz, '#a8784e');
@@ -6793,7 +6798,7 @@ W.buildMarket = function () {
     cover.visible = false;
     w.shelves[sh.id] = { g, cover };
     w.spots.push({ id: 'shelf_' + sh.id, x, z: z + 1.25, r: 2.4, wide: true,
-      label: () => (sh.level && G.state.level < sh.level) ? null : sh.name + ' の たなを みる',
+      label: () => (sh.level && G.state.level < sh.level) ? null : sh.name + 'の たなを みる',
       on: () => !(sh.level && G.state.level < sh.level),
       act: () => UI.openShelf(sh.id) });
   }
@@ -6991,7 +6996,7 @@ W.updateStaff = function (w, dt) {
 // ===== 画面の部品 =====
 const UI = {};
 const $ = (s) => document.querySelector(s);
-const yen = (n) => Math.round(n).toLocaleString('ja-JP') + ' コイン';
+const yen = (n) => Math.round(n).toLocaleString('ja-JP') + ' コイン';  // 数字と コインを おなじ 行に
 UI.icon = (name, cls = '') => {
   if (name === 'curry') return `<img class="ic ${cls}" src="${E.img.curry ? E.img.curry.toDataURL() : ''}" alt="">`;
   return ASSETS[name] ? `<img class="ic ${cls}" src="${ASSETS[name]}" alt="">` : '';
@@ -7236,13 +7241,13 @@ UI.openMemo = function (tab) {
       return `<div class="mi ${ok ? 'ok' : ''}"><span class="chk">${ok ? '✔' : ''}</span>${UI.ingIcon(r.id)}<span class="mn">${DATA.ING[r.id].name}</span><span class="mc">${Math.min(r.have, r.need)} / ${r.need}</span></div>`;
     }).join('') + '</div>' : '<p>いまは かう ものは ないよ。</p>';
     const left = list.filter((r) => r.have < r.need);
-    body += `<p class="note">${left.length ? 'スーパーで かって、かごに いれると ✔ が つくよ。' : 'ぜんぶ そろったよ！ おみせに もどって「かいてん」しよう。'}</p>`;
+    body += `<p class="note">${left.length ? 'スーパーで かって、かごに いれると ✔が つくよ。' : 'ぜんぶ そろったよ！ おみせに もどって「かいてん」しよう。'}</p>`;
   } else if (tab === 'recipe') {
     body += '<div class="recipes">' + st.unlocked.map((id) => {
       const r = DATA.RECIPES[id];
       return `<div class="rc"><div class="rh">${UI.icon(r.icon, 'big')}<div><b>${r.name}</b><br><span class="price">${yen(r.price)}</span></div></div>
         <div class="rneed">${Object.keys(r.need).map((i) => `<span>${UI.ingIcon(i)}${DATA.ING[i].name}</span>`).join('')}</div>
-        <ol class="steps">${r.steps.map(([i, a]) => `<li>${i ? DATA.ING[i].name + ' を ' : 'おさらに '}<b>${DATA.ACT[a].name}</b></li>`).join('')}</ol></div>`;
+        <ol class="steps">${r.steps.map(([i, a]) => `<li>${i ? DATA.ING[i].name + 'を ' : 'おさらに '}<b>${DATA.ACT[a].name}</b></li>`).join('')}</ol></div>`;
     }).join('') + '</div>';
   } else if (tab === 'book') {
     const b = st.book, dishes = Object.keys(DATA.RECIPES), ings = Object.keys(DATA.ING), staff = Object.keys(DATA.STAFF);
@@ -7280,7 +7285,7 @@ UI.openShelf = function (cat) {
   const render = () => {
     need = {}; G.shoppingList().forEach((r) => need[r.id] = r);
     const total = G.basketTotal();
-    const p = UI.open(`<h2 style="color:${sh.color}">${sh.name} の たな</h2>
+    const p = UI.open(`<h2 style="color:${sh.color}">${sh.name}の たな</h2>
       <div class="shelfwrap"><div class="shelf">${items.map((id, i) => {
         const v = DATA.ING[id], inB = st.basket[id] || 0, r = need[id];
         return `<div class="item ${i === cur ? 'cur' : ''} ${r && r.have < r.need ? 'want' : ''}" data-i="${i}">${UI.ingIcon(id, 'big')}<div class="nm">${v.name}</div><div class="pr">${G.ingPrice(id) < v.price ? `<s>${yen(v.price)}</s> ` : ''}${yen(G.ingPrice(id))}</div>${inB ? `<div class="inb">かご ${inB}</div>` : ''}${r ? `<div class="need ${r.have >= r.need ? 'ok' : ''}">${r.have >= r.need ? '✔ OK' : 'メモ ' + r.need + 'こ'}</div>` : ''}</div>`;
@@ -7305,7 +7310,7 @@ UI.openShelf = function (cat) {
       if ((st.basket[id] = (st.basket[id] || 0) + 1, (() => { const over = G.payable() > st.money; st.basket[id]--; return over; })())) { Audio.se('ng'); UI.toast('おさいふの おかねが たりないよ'); return; }
       st.basket[id] = (st.basket[id] || 0) + 1; Audio.se('ok');
       const key = DATA.ING[id].base || id, r = need[key];
-      if (r && r.have + 1 === r.need) UI.toast(`${DATA.ING[key].name} が そろった！ ✔`, 'good');
+      if (r && r.have + 1 === r.need) UI.toast(`${DATA.ING[key].name}が そろった！ ✔`, 'good');
       G.recalc();
     }
     if (k !== 'ok') Audio.se('tap');
@@ -7317,16 +7322,39 @@ UI.openShelf = function (cat) {
 // ---------- レジ ----------
 UI.openRegister = function () {
   const st = G.state, b = Object.entries(st.basket).filter(([, n]) => n > 0);
-  if (!b.length) { UI.open('<h2>レジ</h2><p class="lead">かごが からっぽだよ。たなで しょくざいを えらんでね。</p>', { cls: 'small' }); return; }
+  if (!b.length) {
+    const q = UI.open('<h2>レジ</h2><p class="lead">かごが からっぽだよ。たなで しょくざいを えらんでね。</p><div class="row c"><button class="b ghost" id="gosell">🧺 あまった しょくざいを うる</button></div>', { cls: 'small' });
+    q.querySelector('#gosell').onclick = () => UI.openSell(); return;
+  }
   const total = G.basketTotal();
   const p = UI.open(`<h2>レジ</h2><div class="receipt">${b.map(([id, n]) => `<div class="rl">${UI.ingIcon(id)}<span>${DATA.ING[id].name} × ${n}</span><b>${yen(G.ingPrice(id) * n)}</b></div>`).join('')}
     <div class="rl tot"><span>ごうけい</span><b>${yen(total)}</b></div>${G.couponUse() ? `<div class="rl coupon"><span>🎫 おうえんけん</span><b>−${yen(G.couponUse())}</b></div><div class="rl tot"><span>はらう おかね</span><b>${yen(G.payable())}</b></div>` : ''}<div class="rl"><span>おさいふ</span><b>${yen(st.money)}</b></div></div>
-    <div class="row c"><button class="b big" id="pay">はらう</button></div>`, { cls: 'small' });
+    <div class="row c"><button class="b big" id="pay">はらう</button><button class="b ghost" id="gosell">🧺 しょくざいを うる</button></div>`, { cls: 'small' });
+  p.querySelector('#gosell').onclick = () => UI.openSell();
   p.querySelector('#pay').onclick = () => {
     if (G.payable() > st.money) { Audio.se('ng'); UI.toast('おかねが たりないよ。かごから もどそう'); return; }
     G.pay();
     UI.close();
   };
+};
+
+// ---------- v8: しょくざいを うる ----------
+UI.openSell = function () {
+  const st = G.state;
+  const render = () => {
+    const ids = Object.keys(DATA.ING).filter((id) => (st.stock[id] || 0) > 0);
+    const why = (id) => (G.cpnOf(id) >= (st.stock[id] || 0) ? 'おうえんけんで かったよ' : 'メモで つかうよ');
+    const body = ids.length ? `<div class="cards sellcards">${ids.map((id) => {
+      const k = G.sellable(id), v = DATA.ING[id];
+      return `<div class="card ${k ? '' : 'off'}">${UI.ingIcon(id, 'big')}<b>${v.name}</b><p>もっている ${st.stock[id]}こ<br>1こ <b>${yen(G.sellPrice(id))}</b></p>${k ? `<button class="b sm sl" data-id="${id}">1こ うる</button>` : `<span class="lock">${why(id)}</span>`}</div>`;
+    }).join('')}</div>` : '<p class="lead">いまは もっている しょくざいが ないよ。</p>';
+    const p = UI.open(`<h2>しょくざいを うる <span class="wal">おさいふ ${yen(st.money)}</span></h2>
+      <p class="lead">あまった しょくざいを、ねだんの はんぶんで ひきとって もらえるよ。<br>きょうの メモで つかう ぶんと、おうえんけんで かった ぶんは うれないよ。</p>${body}
+      <div class="row c"><button class="b ghost" id="sback">レジに もどる</button></div>`, { cls: 'wide' });
+    p.querySelectorAll('.sl').forEach((bt) => bt.onclick = () => { const id = bt.dataset.id, got = G.sell(id, 1); if (got) UI.toast(`${DATA.ING[id].name}を うって ${yen(got)} もらったよ`, 'good'); render(); });
+    p.querySelector('#sback').onclick = () => UI.openRegister();
+  };
+  render();
 };
 
 // ---------- 料理 ----------
@@ -7341,13 +7369,13 @@ UI.openCook = function () {
   if (!waiting.length) { UI.open('<h2>キッチン</h2><p class="lead">いまは ちゅうもんが ないよ。おきゃくさんを まとう。</p>', { cls: 'small' }); return; }
   const p = UI.open(`<h2>どの ちゅうもんを つくる？</h2><div class="tickets">${waiting.map((g, i) => {
     const r = DATA.RECIPES[g.recipe], miss = G.missing(g.recipe);
-    return `<button class="tk" data-i="${i}">${UI.icon(r.icon, 'big')}<b>${g.table.id + 1}ばん</b><span>${r.name}</span><small>${Math.floor(g.wait)}びょう まってる</small>${miss.length ? `<em>${miss.map((m) => DATA.ING[m].name).join('・')} が たりない</em>` : ''}</button>`;
+    return `<button class="tk" data-i="${i}">${UI.icon(r.icon, 'big')}<b>${g.table.id + 1}ばん</b><span>${r.name}</span><small>${Math.floor(g.wait)}びょう まってる</small>${miss.length ? `<em>${miss.map((m) => DATA.ING[m].name).join('・')}が たりない</em>` : ''}</button>`;
   }).join('')}</div>`, { cls: 'wide' });
   p.querySelectorAll('.tk').forEach((b) => b.onclick = () => {
     const g = waiting[+b.dataset.i], miss = G.missing(g.recipe);
     Audio.se('tap');
     if (miss.length) {
-      UI.confirm(`${miss.map((m) => DATA.ING[m].name).join('・')} が たりないよ。<br>${g.table.id + 1}ばんの おきゃくさんに「ごめんなさい」を する？<br><small>（スーパーや はたけで あつめてから つくっても いいよ）</small>`, () => G.apologize(g), { yes: 'ごめんなさい する', no: 'あとで' });
+      UI.confirm(`${miss.map((m) => DATA.ING[m].name).join('・')}が たりないよ。<br>${g.table.id + 1}ばんの おきゃくさんに「ごめんなさい」を する？<br><small>（スーパーや はたけで あつめてから つくっても いいよ）</small>`, () => G.apologize(g), { yes: 'ごめんなさい する', no: 'あとで' });
       return;
     }
     UI.cookRecipe(g);
@@ -7369,8 +7397,8 @@ UI.cookRecipe = function (guest) {
   const disp = (id) => used[id] || id;
   const render = (msg) => {
     const step = r.steps[stepI];
-    const p = UI.open(`<h2>${r.name} を つくろう <small>${guest.table.id + 1}ばん テーブル</small></h2>
-      <div class="cookwrap"><div class="cmemo"><div class="ct">メモ（レシピ）<b class="cstep">${Math.min(stepI + 1, r.steps.length)} / ${r.steps.length}</b></div><ol>${r.steps.map(([i, a], k) => `<li class="${k < stepI ? 'done' : k === stepI ? 'now' : ''}">${k < stepI ? '✔ ' : ''}${i ? DATA.ING[i].name + ' を ' : 'おさらに '}<b>${DATA.ACT[a].name}</b></li>`).join('')}</ol></div>
+    const p = UI.open(`<h2>${r.name}を つくろう <small>${guest.table.id + 1}ばん テーブル</small></h2>
+      <div class="cookwrap"><div class="cmemo"><div class="ct">メモ（レシピ）<b class="cstep">${Math.min(stepI + 1, r.steps.length)} / ${r.steps.length}</b></div><ol>${r.steps.map(([i, a], k) => `<li class="${k < stepI ? 'done' : k === stepI ? 'now' : ''}">${k < stepI ? '✔ ' : ''}${i ? DATA.ING[i].name + 'を ' : 'おさらに '}<b>${DATA.ACT[a].name}</b></li>`).join('')}</ol></div>
       <div class="cmain"><div class="stage" id="stage" style="${ASSETS.st_board ? `background-image:url(${ASSETS[{ arau: 'st_sink', kiru: 'st_board', yaku: 'st_pan', niru: 'st_pot', mazeru: 'st_bowl', nigiru: 'st_board', moru: 'st_plate' }[r.steps[stepI] ? r.steps[stepI][1] : 'moru']] || ASSETS.st_board})` : ''}">${pick ? (pick === 'plate' ? '<div class="plate">🍽️</div>' : UI.ingIcon(disp(pick), 'huge')) : '<div class="ph">しょくざいを えらんでね</div>'}<div class="prog"><i id="pg"></i></div></div>
         <div class="msg" id="cmsg">${msg || (pick ? 'つぎは さぎょうを えらぼう' : 'メモを みて、しょくざいを えらぼう')}</div></div></div>
       <div class="lbl">しょくざい</div><div class="ings">${pool.map((id) => `<button class="ing ${pick === id ? 'on' : ''} ${wrong >= 2 && r.steps[stepI] && (r.steps[stepI][0] || 'plate') === id ? 'hint' : ''}" data-id="${id}">${UI.ingIcon(disp(id))}<span>${DATA.ING[disp(id)].name}</span></button>`).join('')}<button class="ing ${pick === 'plate' ? 'on' : ''} ${wrong >= 2 && r.steps[stepI] && r.steps[stepI][0] === null ? 'hint' : ''}" data-id="plate"><span class="plate s">🍽️</span><span>おさら</span></button></div>
@@ -7649,7 +7677,7 @@ UI.openSummary = function (d) {
   const p = UI.open(`<h2>${d.day}にちめ おしまい</h2><div class="sum">${UI.icon('st_master', 'tall')}<div>
     <div class="rl"><span>おきゃくさん</span><b>${d.guests}にん</b></div>
     <div class="rl"><span>うりあげ</span><b class="plus">+${yen(d.sales)}</b></div>
-    <div class="rl"><span>つかった おかね</span><b class="minus">-${yen(d.spent)}</b></div>
+    <div class="rl"><span>つかった おかね</span><b class="minus">-${yen(d.spent)}</b></div>${d.sold ? `<div class="rl"><span>しょくざいを うった おかね</span><b class="plus">+${yen(d.sold)}</b></div>` : ''}
     <div class="rl tot"><span>おさいふ</span><b>${yen(d.money)}</b></div>
     ${d.fastest ? `<div class="rl"><span>いちばん はやい ていきょう</span><b>${d.fastest}びょう</b></div>` : ''}
     ${G.state.stats.perfect ? `<div class="rl"><span>★3つの りょうり</span><b class="plus">${G.state.stats.perfect}かい</b></div>` : ''}</div></div>
@@ -7657,7 +7685,7 @@ UI.openSummary = function (d) {
     ${d.nextU ? `<div class="next">⭐ つぎの レベル${d.nextU.level}まで うりあげ あと <b>${yen(d.nextU.left)}</b>${d.nextU.items.length ? '<br>とうじょうする もの：' + d.nextU.items.slice(0, 4).join('・') : ''}</div>` : ''}</div>
     ${(() => { const st = G.state, n = st.goalsDone || 0, f = n === 0 ? 0 : (n % 5 || 5);
       return `<div class="stamps"><span>もくひょう スタンプ</span>${[0, 1, 2, 3, 4].map((i) => `<i class="${i < f ? 'on' : ''}">${i < f ? '🌸' : ''}</i>`).join('')}<small>ぜんぶで ${n}こ</small></div>`; })()}
-    ${G.state.lvUpDay === d.day ? `<div class="next grow">🎉 レベル${G.state.level} に なったよ！ おみせの まえが にぎやかに なったよ（まちで みてね）</div>` : ''}
+    ${G.state.lvUpDay === d.day ? `<div class="next grow">🎉 レベル${G.state.level}に なったよ！ おみせの まえが にぎやかに なったよ（まちで みてね）</div>` : ''}
     ${G.state.lvUpDay === d.day ? '' : '<p class="note">おそうじ おつかれさま！ きょうも おいしい りょうりを ありがとう。</p>'}
     <div class="row c"><button class="b big" id="next">つぎの ひへ</button></div>`, { cls: 'small sumw', noClose: true });
   p.querySelector('#next').onclick = () => { Audio.se('ok'); UI.close(true); G.nextDay(); };
@@ -7707,7 +7735,7 @@ G.newState = () => ({
   v: 1, day: 1, money: DATA.START_MONEY, level: 1, totalSales: 0, phase: 'prep',
   stock: {}, basket: {}, unlocked: Object.keys(DATA.RECIPES).filter((k) => DATA.RECIPES[k].start),
   staff: [], decor: {}, tools: {}, field: new Array(DATA.FIELD_PLOTS).fill(null),
-  animals: {}, produce: {}, plan: [], planI: 0, hold: null, usePremium: true,
+  animals: {}, produce: {}, plan: [], planI: 0, hold: null, usePremium: true, cpn: {},
   stats: { sales: 0, spent: 0, guests: 0, fastest: 0, fast: 0, clean: 0, sorry: 0 }, dirt: [], guestSeq: 0,
   book: { dish: {}, ing: {} }, goal: null, goalsDone: 0,
 });
@@ -7751,7 +7779,7 @@ G.takeIngredients = function (rid, noPremium) {
     for (let k = 0; k < q; k++) {
       const prem = Object.keys(DATA.ING).find((pid) => DATA.ING[pid].base === id && (st.stock[pid] || 0) > 0);
       const use = noPremium ? id : st.usePremium && prem ? prem : ((st.stock[id] || 0) > 0 ? id : prem);
-      st.stock[use]--; used[id] = use;
+      st.stock[use]--; used[id] = use; if (st.cpn && st.cpn[use] > 0) st.cpn[use]--;
     }
   }
   return used;
@@ -7784,7 +7812,16 @@ G.couponUse = function () {
 G.payable = () => G.basketTotal() - G.couponUse();
 G.pay = function () {
   const st = G.state, total = G.basketTotal(), used = G.couponUse(), cash = total - used;
+  // おうえんけんを つかった おかいけいでは、メモに かかわる しな（高級品も ふくむ）を ぜんぶ 券の ぶんと して おぼえる。
+  // （券と おかねの わけかたを 1こずつ 合わせるより、ひかえめに して 現金に かえる 道を なくす）
+  const cpAlloc = {};
+  if (used) {
+    const memo = new Set(G.shoppingList().map((r) => r.id));
+    for (const [id, n] of Object.entries(st.basket)) if (n > 0 && memo.has(DATA.ING[id].base || id)) cpAlloc[id] = n;
+  }
   st.money -= cash; st.stats.spent += cash; if (used) st.coupon.amount -= used;
+  st.cpn = st.cpn || {};
+  for (const [id, n] of Object.entries(cpAlloc)) st.cpn[id] = (st.cpn[id] || 0) + n;
   for (const [id, n] of Object.entries(st.basket)) { st.stock[id] = (st.stock[id] || 0) + n; if (n > 0) G.seeIng(id); }
   st.basket = {};
   Audio.se('coin');
@@ -7802,8 +7839,26 @@ G.cheerIfNeeded = function () {
   if (need <= 0) return 0;
   const add = Math.ceil(need / 100) * 100;
   st.coupon = { day: st.day, amount: G.couponLeft() + add };
-  setTimeout(() => UI.toast(`しょうてんがいの みんなから「おうえんけん」${yen(add)} が とどいたよ。メモの しょくざいに つかえるよ 🎫`, 'good'), 600);
+  setTimeout(() => UI.toast(`しょうてんがいの みんなから「おうえんけん」${yen(add)}が とどいたよ。メモの しょくざいに つかえるよ 🎫`, 'good'), 600);
   G.save(); G.recalc(); return add;
+};
+// ---------- v8: あまった しょくざいを うる（かった ねだんの はんぶん）----------
+// うれない もの: きょうの メモで つかう ぶん・おうえんけんで かった ぶん（げんきんに しない）
+G.sellPrice = (id) => Math.max(10, Math.floor(Math.min(DATA.ING[id].price, G.ingPrice(id)) / 2 / 10) * 10);
+G.memoNeed = (b) => { const r = G.shoppingList().find((x) => x.id === b); return r ? r.need : 0; };
+G.cpnOf = (id) => Math.min(G.state.stock[id] || 0, (G.state.cpn && G.state.cpn[id]) || 0);
+G.sellable = function (id) {
+  const st = G.state, have = st.stock[id] || 0; if (have <= 0 || !DATA.ING[id]) return 0;
+  const b = DATA.ING[id].base || id, spare = G.avail(b) - G.memoNeed(b);
+  const k = Math.floor(Math.min(have - G.cpnOf(id), spare));
+  return Number.isFinite(k) && k > 0 ? k : 0;
+};
+G.sell = function (id, n = 1) {
+  const st = G.state; n = Math.floor(Math.min(Number(n) || 0, G.sellable(id))); if (!(n > 0)) return 0;
+  const got = G.sellPrice(id) * n;
+  st.stock[id] -= n; st.money += got; st.stats.sold = (st.stats.sold || 0) + got;
+  if (st.cpn && st.cpn[id] > st.stock[id]) st.cpn[id] = st.stock[id];
+  Audio.se('coin'); G.save(); G.recalc(); return got;
 };
 G.shopName = () => (G.state && G.state.shopName) || DATA.SHOP_NAME;
 G.setShopName = function (v) {
@@ -7845,7 +7900,7 @@ G.makeGoal = function () {
 };
 G.goalText = function () {
   const g = G.state.goal; if (!g) return '';
-  return { all: `おきゃくさん ぜんいん（${g.need}にん）に りょうりを だす`, fast: `30びょう いないに はこぶ を ${g.need}かい`, nomiss: `まちがえずに りょうりする を ${g.need}かい`, sales: `うりあげ ${yen(g.need)} いじょう` }[g.kind];
+  return { all: `おきゃくさん ${g.need}にん ぜんいんに りょうりを だす`, fast: `30びょう いないに はこぶ（${g.need}かい）`, nomiss: `まちがえずに りょうりする（${g.need}かい）`, sales: `うりあげ ${yen(g.need)} いじょう` }[g.kind];
 };
 G.goalNow = function () {
   const st = G.state, g = st.goal; if (!g) return 0;
@@ -7970,14 +8025,14 @@ G.hint = function () {
   if (st.phase === 'prep') {
     if (miss.length && w === 'restaurant') text = 'メモに かいてある しょくざいが たりないよ。<br>「でぐち」から そとに でて、<b>スーパー ひだまり</b>へ いこう。<br>おみせを でたら、みちに そって <b>まっすぐ おく</b>へ すすむと 左がわに あるよ。';
     else if (miss.length && w === 'town') text = '<b>スーパー ひだまり</b>は、おみせから みちに そって まっすぐ おくへ。<br>1つめの こうさてんを わたって すぐの 左がわ（みどりの かんばん）だよ。<br>くるまに きを つけてね。くるまは ひとが いると とまってくれるよ。';
-    else if (miss.length && w === 'market') text = `たなの まえで「しらべる」を おすと、たなの しょくざいを えらべるよ。<br>つぎに いるのは <b>${DATA.ING[miss[0].id].name}</b>（${DATA.SHELVES.find((s) => s.id === DATA.ING[miss[0].id].cat).name} の たな）。`;
+    else if (miss.length && w === 'market') text = `たなの まえで「しらべる」を おすと、たなの しょくざいを えらべるよ。<br>つぎに いるのは <b>${DATA.ING[miss[0].id].name}</b>（${DATA.SHELVES.find((s) => s.id === DATA.ING[miss[0].id].cat).name}の たな）。`;
     else if (w === 'market') text = Object.values(st.basket).some((n) => n > 0) ? '<b>レジ</b>で おかいけい しよう。でぐちの 右がわに あるよ。' : 'かいものは おわり！ でぐちから でて、おみせに もどろう。';
-    else if (w === 'town') text = `おみせ「${UI.esc(G.shopName())}」に もどろう。` + '<br>おみせの よこには <b>はたけ と ぼくじょう</b> も あるよ。';
+    else if (w === 'town') text = `おみせ「${UI.esc(G.shopName())}」に もどろう。` + '<br>おみせの よこには <b>はたけと ぼくじょう</b> も あるよ。';
     else text = 'じゅんび できたよ！ 右下の <b>「かいてん」</b> ボタンを おそう。<br>「おみせ」で てんいんや どうぐ、「かいはつ」で あたらしい メニューも つくれるよ。';
   } else if (st.phase === 'open') {
     if (st.hold) text = `できた おりょうりを <b>${st.hold.table + 1}ばん テーブル</b> に はこぼう。<br>テーブルの まえで「しらべる」。はやいほど おかねが ふえるよ。`;
     else if (G.dirtyBlock()) text = 'あいている テーブルが よごれていて、つぎの おきゃくさんが すわれないよ。<br>テーブルの まえで「ぞうきんで ふく」を おそう。';
-    else text = 'キッチンの コンロの まえで「りょうりする」を おそう。<br>メモ（レシピ）の じゅんばんに、しょくざい → さぎょう を えらぶよ。';
+    else text = 'キッチンの コンロの まえで「りょうりする」を おそう。<br>メモ（レシピ）の じゅんばんに、しょくざい → さぎょうを えらぶよ。';
   } else if (st.phase === 'clean') text = 'よごれた テーブルは ぞうきんで、ゆかの よごれは モップで ふこう。<br>ぜんぶ きれいに なったら 1にちが おわるよ。';
   return { text, target: G.target() };
 };
@@ -8083,7 +8138,7 @@ G.useTable = function (t) {
   const st = G.state, w = G.worlds.restaurant;
   if (st.phase === 'open' && t.guest) {
     const g = t.guest;
-    if (!st.hold) { Audio.se('tap'); UI.toast(`${t.id + 1}ばん：「${DATA.RECIPES[g.recipe].name} を ください！」`); G.voice(DATA.RECIPES[g.recipe].name + 'を ください！', g.plan.guest, true); return; }
+    if (!st.hold) { Audio.se('tap'); UI.toast(`${t.id + 1}ばん：「${DATA.RECIPES[g.recipe].name}を ください！」`); G.voice(DATA.RECIPES[g.recipe].name + 'を ください！', g.plan.guest, true); return; }
     if (st.hold.guest !== g.id) { Audio.se('ng'); UI.toast(`ちがう テーブル みたい。${st.hold.table + 1}ばん テーブルだよ`); return; }
     // おかね
     const r = DATA.RECIPES[g.recipe];
@@ -8167,7 +8222,7 @@ G.closeStore = function () {
   G.makeDirt();
   // テーブルが 1つも よごれて いなくても ゆかは ある
   UI.banner('へいてん', 'おそうじを しよう 🧽🧹', 2600);
-  if (helped.length) setTimeout(() => UI.toast(`てんいんさんが ${helped.join('・')} を きれいに してくれたよ`, 'good'), 2000);
+  if (helped.length) setTimeout(() => UI.toast(`てんいんさんが ${helped.join('・')}を きれいに してくれたよ`, 'good'), 2000);
   Audio.se('bell'); G.music(); G.save(); G.recalc();
   G.checkClean();
 };
@@ -8193,7 +8248,7 @@ G.checkClean = function () {
   if (w.tables.some((t) => t.dirty) || st.dirt.some((d) => !d.done)) return;
   st.phase = 'summary';
   Audio.se('level');
-  setTimeout(() => UI.openSummary({ day: st.day, guests: st.stats.guests, sales: st.stats.sales, spent: st.stats.spent, money: st.money, fastest: st.stats.fastest, goal: st.goal, goalText: G.goalText(), nextU: G.nextUnlock() }), 700);
+  setTimeout(() => UI.openSummary({ day: st.day, guests: st.stats.guests, sales: st.stats.sales, spent: st.stats.spent, sold: st.stats.sold || 0, money: st.money, fastest: st.stats.fastest, goal: st.goal, goalText: G.goalText(), nextU: G.nextUnlock() }), 700);
   G.save();
 };
 G.nextDay = function () {
@@ -8257,23 +8312,23 @@ G.tryDev = function (rid, sel) {
 G.plotLabel = function (i) {
   const f = G.state.field[i];
   if (!f) return 'はたけに たねを まく';
-  if (f.grow >= DATA.SEEDS[f.crop].days) return DATA.ING[f.crop].name + ' を しゅうかく';
-  return f.watered ? DATA.ING[f.crop].name + ' を みる' : 'みずを やる 💧';
+  if (f.grow >= DATA.SEEDS[f.crop].days) return DATA.ING[f.crop].name + 'を しゅうかく';
+  return f.watered ? DATA.ING[f.crop].name + 'を みる' : 'みずを やる 💧';
 };
-G.penLabel = (k) => (G.state.animals[k] ? DATA.ANIMALS[k].name + ' の おせわ' : DATA.ANIMALS[k].name + ' を かう');
+G.penLabel = (k) => (G.state.animals[k] ? DATA.ANIMALS[k].name + 'の おせわ' : DATA.ANIMALS[k].name + 'を かう');
 G.plant = function (i, crop) {
   const st = G.state, v = DATA.SEEDS[crop];
   if (v.price > st.money) { Audio.se('ng'); UI.toast('おかねが たりないよ'); return; }
   st.money -= v.price; st.stats.spent += v.price;
   st.field[i] = { crop, grow: 0, watered: true };
-  Audio.se('ok'); UI.toast(`${DATA.ING[crop].name} の たねを まいて、みずも やったよ 💧`, 'good');
+  Audio.se('ok'); UI.toast(`${DATA.ING[crop].name}の たねを まいて、みずも やったよ 💧`, 'good');
   W.refreshFarm(G.worlds.town); UI.close(); G.save();
 };
 G.water = function (i) { G.state.field[i].watered = true; Audio.se('water'); UI.toast('みずを やったよ。あしたが たのしみ', 'good'); W.refreshFarm(G.worlds.town); UI.close(); G.save(); };
 G.harvest = function (i) {
   const st = G.state, f = st.field[i], v = DATA.SEEDS[f.crop];
   st.stock[f.crop] = (st.stock[f.crop] || 0) + v.yield; st.field[i] = null; G.seeIng(f.crop);
-  Audio.se('done'); UI.banner(`${UI.icon(f.crop, 'big')} しゅうかく！`, `${DATA.ING[f.crop].name} が ${v.yield}こ とれたよ`);
+  Audio.se('done'); UI.banner(`${UI.icon(f.crop, 'big')} しゅうかく！`, `${DATA.ING[f.crop].name}が ${v.yield}こ とれたよ`);
   W.refreshFarm(G.worlds.town); UI.close(); G.save(); G.recalc();
 };
 G.buyAnimal = function (k) {
@@ -8285,7 +8340,7 @@ G.buyAnimal = function (k) {
 G.collect = function (k) {
   const st = G.state, a = DATA.ANIMALS[k], n = st.produce[k] || 0;
   st.stock[a.gives] = (st.stock[a.gives] || 0) + n; st.produce[k] = 0; if (n) G.seeIng(a.gives);
-  Audio.se('done'); UI.toast(`${DATA.ING[a.gives].name} を ${n}こ あつめたよ`, 'good');
+  Audio.se('done'); UI.toast(`${DATA.ING[a.gives].name}を ${n}こ あつめたよ`, 'good');
   W.refreshFarm(G.worlds.town); UI.close(); G.save(); G.recalc();
 };
 
@@ -8336,6 +8391,10 @@ G.start = function (save) {
   if (st.ev) { st.ev.got = Array.isArray(st.ev.got) ? st.ev.got.filter((i) => Number.isInteger(i)) : []; st.ev.done = !!st.ev.done; }
   if (st.shopName != null) st.shopName = String(st.shopName).replace(/[\s　]+/g, ' ').trim().slice(0, DATA.NAME_MAX) || null;
   if (st.coupon && (typeof st.coupon.amount !== 'number' || st.coupon.amount < 0)) st.coupon = null;
+  const toInt = (v) => (Number.isFinite(+v) && +v > 0 ? Math.floor(+v) : 0);
+  for (const k of Object.keys(st.stock || {})) { st.stock[k] = toInt(st.stock[k]); if (!st.stock[k]) delete st.stock[k]; }
+  if (!st.cpn || typeof st.cpn !== 'object') st.cpn = Object.assign({}, st.stock);   // v8 より まえの セーブ
+  for (const k of Object.keys(st.cpn)) { const v = Math.min(toInt(st.cpn[k]), st.stock[k] || 0); if (!DATA.ING[k] || !v) delete st.cpn[k]; else st.cpn[k] = v; }
   if (!st.goal && st.plan && st.plan.length) G.makeGoal();
   G.refreshEvent();
   if (!save) G.makePlan();
@@ -8423,7 +8482,7 @@ window.addEventListener('load', () => {
   $('#tCont').addEventListener('click', (e) => { e.stopPropagation(); G.titleTap('continue'); });
   $('#tNew').addEventListener('click', (e) => {
     e.stopPropagation();
-    $('#tchoice').innerHTML = '<p class="tq">はじめから に すると、いままでの おみせは きえるよ。いい？</p><button class="tb" id="tYes">はじめから あそぶ</button><button class="tb ghost" id="tNo">やめる</button>';
+    $('#tchoice').innerHTML = '<p class="tq">「はじめから」に すると、いままでの おみせは きえるよ。いい？</p><button class="tb" id="tYes">はじめから あそぶ</button><button class="tb ghost" id="tNo">やめる</button>';
     $('#tYes').onclick = (ev) => { ev.stopPropagation(); try { localStorage.removeItem(SAVE_KEY); } catch (er) {} G.titleTap('new'); };
     $('#tNo').onclick = (ev) => { ev.stopPropagation(); location.reload(); };
   });
@@ -8441,18 +8500,18 @@ DATA.EVENTS = {
   festival: { name: 'しょうてんがいの おまつり', icon: '🏮', text: 'おまつり ひろばで おまつり！ おきゃくさんが 2にん ふえて、ひろばの やたいで しょくざいが もらえるよ', guests: 2, tip: 0.05, visit: 'stall', where: 'plaza', w: 2, first: 2 },
   sale:     { name: 'スーパーの おおうりだし', icon: '🏷️', text: 'スーパー ひだまりで ぜんぶ 3わり びき！ かいだめの チャンス', sale: 0.7, w: 3 },
   harvest:  { name: 'はたけの ほうさく', icon: '🌽', text: 'おひさまの おかげで はたけの やさいが 1にちぶん はやく そだったよ', harvest: true, w: 2, minDay: 3 },
-  critic:   { name: 'グルメ はかせが くる', icon: '🎩', text: 'きょう グルメ はかせが たべに くるよ。★3つの りょうりを だすと ごほうび 1500 コイン！', vip: 'critic', w: 2, minDay: 4 },
-  birthday: { name: 'おたんじょうびの おきゃくさん', icon: '🎂', text: 'きょうは おたんじょうびの おきゃくさんが くるよ。りょうりを だすと みんなで おいわい（ごほうび 800 コイン）', vip: 'birthday', w: 2, minDay: 3 },
+  critic:   { name: 'グルメ はかせが くる', icon: '🎩', text: 'きょう グルメ はかせが たべに くるよ。★3つの りょうりを だすと ごほうび 1500 コイン！', vip: 'critic', w: 2, minDay: 4 },
+  birthday: { name: 'おたんじょうびの おきゃくさん', icon: '🎂', text: 'きょうは おたんじょうびの おきゃくさんが くるよ。りょうりを だすと みんなで おいわい（ごほうび 800 コイン）', vip: 'birthday', w: 2, minDay: 3 },
   team:     { name: 'サッカー チームが くる', icon: '⚽', text: 'しあいの あとの サッカー チームが たべに くるよ。おきゃくさんが 3にん ふえる！', guests: 3, w: 2, minDay: 5 },
   treasure: { name: 'たからさがし', icon: '🎁', text: '町の どこかに プレゼントが 5こ かくれているよ。こうえん・みなと・えきの ほうを さがしてみよう', find: 'e_present', items: [[-88, -14], [96, -72], [-20, 58], [24, 70], [-44, -58]], reward: 'random', w: 2, minDay: 2 },
-  balloons: { name: 'ふうせん あつめ', icon: '🎈', text: 'こうえんに ふうせんが 6こ とんできたよ。ぜんぶ あつめると 1000 コイン！', find: 'balloon', items: [[-92, -6], [-80, -24], [-66, -4], [-58, -24], [-48, -14], [-74, -10]], reward: 'balloon', where: 'park', w: 2 },
-  cat:      { name: 'まいごの ねこ', icon: '🐈', text: 'まいごの ねこを さがしているよ。みなとの ほうで みたって。みつけたら ごほうび 800 コイン', find: 'c_cat', items: [[88, -79]], reward: 800, where: 'harbor', w: 2, minDay: 3 },
+  balloons: { name: 'ふうせん あつめ', icon: '🎈', text: 'こうえんに ふうせんが 6こ とんできたよ。ぜんぶ あつめると 1000 コイン！', find: 'balloon', items: [[-92, -6], [-80, -24], [-66, -4], [-58, -24], [-48, -14], [-74, -10]], reward: 'balloon', where: 'park', w: 2 },
+  cat:      { name: 'まいごの ねこ', icon: '🐈', text: 'まいごの ねこを さがしているよ。みなとの ほうで みたって。みつけたら ごほうび 800 コイン', find: 'c_cat', items: [[88, -79]], reward: 800, where: 'harbor', w: 2, minDay: 3 },
   truck:    { name: 'フードトラックが きた', icon: '🚚', text: 'みなとに フードトラック！ はなしかけると ひみつの レシピを 1つ おしえて くれるよ', visit: 'truck', where: 'harbor', w: 2, minDay: 4 },
   fishing:  { name: 'つりたいかい', icon: '🎣', text: 'みなとで つりたいかい。つりの おじいちゃんに はなしかけると さかなを わけて くれるよ', visit: 'fisher', where: 'harbor', w: 2 },
-  ufo:      { name: 'ふしぎな UFO', icon: '🛸', text: 'こうえんの うえに ふしぎな UFO が いるよ！ ちかくで しらべてみよう', find: 'e_ufo', items: [[-70, -18]], reward: 1000, fly: true, where: 'park', w: 1, minDay: 5 },
+  ufo:      { name: 'ふしぎな UFO', icon: '🛸', text: 'こうえんの うえに ふしぎな UFOが いるよ！ ちかくで しらべてみよう', find: 'e_ufo', items: [[-70, -18]], reward: 1000, fly: true, where: 'park', w: 1, minDay: 5 },
   fireworks:{ name: 'はなび たいかい', icon: '🎆', text: 'こんやは はなび たいかい！ みんな うきうきで りょうりが 1わり たかく うれるよ', priceAll: 1.1, fireworks: true, w: 2, minDay: 4 },
-  school:   { name: 'がっこうから ちゅうもん', icon: '🏫', text: 'がっこうの せんせいから「おにぎり 3こ ほしい」って。おこめ 3こを もって がっこうへ いこう（ごほうび 1500 コイン）', visit: 'school', where: 'school', w: 2, minDay: 3 },
-  litter:   { name: 'こうえんの おそうじ', icon: '🧹', text: 'こうえんに ごみが おちているよ。4こ ひろうと ちょうないかいから 600 コイン', find: 'litter', items: [[-84, -4], [-60, -12], [-74, -24], [-52, -4]], reward: 600, where: 'park', w: 2 },
+  school:   { name: 'がっこうから ちゅうもん', icon: '🏫', text: 'がっこうの せんせいから「おにぎり 3こ ほしい」って。おこめ 3こを もって がっこうへ いこう（ごほうび 1500 コイン）', visit: 'school', where: 'school', w: 2, minDay: 3 },
+  litter:   { name: 'こうえんの おそうじ', icon: '🧹', text: 'こうえんに ごみが おちているよ。4こ ひろうと ちょうないかいから 600 コイン', find: 'litter', items: [[-84, -4], [-60, -12], [-74, -24], [-52, -4]], reward: 600, where: 'park', w: 2 },
   tv:       { name: 'テレビの しゅざい', icon: '📺', text: 'テレビの ひとが しゅざいに きたよ。おみせが にんきに なって チップが 1.5わり ふえる', tip: 0.15, w: 1, minDay: 6 },
   hanami:   { name: 'おはなみ', icon: '🌸', text: 'じんじゃの さくらが まんかい！ おきゃくさんが 1にん ふえて、おやつが 2わり たかく うれるよ', guests: 1, sweets: 0.2, w: 2, minDay: 2 },
 };
@@ -8510,11 +8569,11 @@ G.applyEventPlan = function () {
 G.vipServed = function (plan, stars, t) {
   const st = G.state;
   if (plan.vip === 'critic') {
-    if (stars >= 3) { st.money += 1500; Audio.se('level'); setTimeout(() => UI.banner('🎩 グルメ はかせ「すばらしい！」', 'ごほうび 1500 コイン と はかせの おすみつき！', 3000), 900); st.ev && (st.ev.done = true); }
+    if (stars >= 3) { st.money += 1500; Audio.se('level'); setTimeout(() => UI.banner('🎩 グルメ はかせ「すばらしい！」', 'ごほうび 1500 コインと はかせの おすみつき！', 3000), 900); st.ev && (st.ev.done = true); }
     else setTimeout(() => UI.toast('グルメ はかせ「おいしいけど、つぎは ★3つを たのしみに しているよ」'), 900);
   } else if (plan.vip === 'birthday') {
     st.money += 800; Audio.se('level'); G.hearts(t); setTimeout(() => G.hearts(t), 500);
-    setTimeout(() => UI.banner('🎂 おたんじょうび おめでとう！', 'みんなで うたって おいわい。ごほうび 800 コイン', 3000), 900); st.ev && (st.ev.done = true);
+    setTimeout(() => UI.banner('🎂 おたんじょうび おめでとう！', 'みんなで うたって おいわい。ごほうび 800 コイン', 3000), 900); st.ev && (st.ev.done = true);
   }
 };
 G.evReward = function (r) {
@@ -8552,18 +8611,19 @@ G.visitEvent = function (kind) {
     st.ev.done = true; Audio.se('done'); UI.banner('🏮 やたいの おじさん「もってきな！」', 'ウインナー・とうもろこし・バナナを 2こずつ もらったよ', 3000);
   } else if (kind === 'fisher') {
     st.stock.fish = (st.stock.fish || 0) + 3; st.stock.salmon = (st.stock.salmon || 0) + 2; G.seeIng('fish'); G.seeIng('salmon');
-    st.ev.done = true; Audio.se('done'); UI.banner('🎣 たいりょうだ！', 'さかな 3こ と さけ 2こを わけて もらったよ', 3000);
+    st.ev.done = true; Audio.se('done'); UI.banner('🎣 たいりょうだ！', 'さかな 3こと さけ 2こを わけて もらったよ', 3000);
   } else if (kind === 'truck') {
     const L = G.devList();
-    if (!L.length) { st.money += 1000; st.ev.done = true; UI.banner('🚚 フードトラック', 'もう ぜんぶ しってるね！ おれいに 1000 コイン', 3000); }
+    if (!L.length) { st.money += 1000; st.ev.done = true; UI.banner('🚚 フードトラック', 'もう ぜんぶ しってるね！ おれいに 1000 コイン', 3000); }
     else {
       const [rid] = L[st.day % L.length]; st.unlocked.push(rid); st.ev.done = true; Audio.se('level');
       UI.banner(`${UI.icon(DATA.RECIPES[rid].icon, 'big')} ひみつの レシピを おそわった！`, `「${DATA.RECIPES[rid].name}」が メニューに なったよ`, 3200); G.makePlanKeep();
     }
   } else if (kind === 'school') {
-    if (G.avail('rice') < 3) { Audio.se('ng'); UI.toast('おこめが 3こ いるよ。スーパーで かってこよう'); return; }
-    for (let i = 0; i < 3; i++) { const id = (st.stock.rice || 0) > 0 ? 'rice' : 'g_rice'; st.stock[id]--; }
-    st.money += 1500; st.ev.done = true; Audio.se('level'); UI.banner('🏫 せんせい「ありがとう！ みんな よろこぶよ」', 'おにぎりを とどけて ごほうび 1500 コイン', 3000);
+    const free = (id) => Math.max(0, (st.stock[id] || 0) - G.cpnOf(id));   // おうえんけんで かった ぶんは わたせない
+    if (free('rice') + free('g_rice') < 3) { Audio.se('ng'); UI.toast('おこめが 3こ いるよ（おうえんけんで かった ぶんは つかえないよ）。スーパーで かってこよう'); return; }
+    for (let i = 0; i < 3; i++) { const id = free('rice') > 0 ? 'rice' : 'g_rice'; st.stock[id]--; }
+    st.money += 1500; st.ev.done = true; Audio.se('level'); UI.banner('🏫 せんせい「ありがとう！ みんな よろこぶよ」', 'おにぎりを とどけて ごほうび 1500 コイン', 3000);
   }
   W.refreshEvent(G.worlds.town); G.save(); G.recalc();
 };
@@ -8590,7 +8650,7 @@ W.refreshEvent = function (w) {
     sp.userData.bob = { y: sp.position.y, ph: i };
     w.evtItems.push(sp);
     E.textSprite(g, '✨', 0.5, x, (ev.fly ? 7.6 : 1.8), z, { bg: 'rgba(0,0,0,0)', fs: 80, noBack: true });
-    w.spots.push({ id: 'ev' + i, x, z, r: ev.fly ? 3.2 : 2.0, wide: true, label: () => ev.find === 'litter' ? 'ごみを ひろう' : ev.find === 'c_cat' ? 'ねこを だっこする' : ev.fly ? 'UFO を しらべる' : 'ひろう', act: () => G.pickItem(i) });
+    w.spots.push({ id: 'ev' + i, x, z, r: ev.fly ? 3.2 : 2.0, wide: true, label: () => ev.find === 'litter' ? 'ごみを ひろう' : ev.find === 'c_cat' ? 'ねこを だっこする' : ev.fly ? 'UFOを しらべる' : 'ひろう', act: () => G.pickItem(i) });
   });
   const npc = (n, x, z, kind, label) => { const sp = E.sprite(g, n, 1.4, x, 0, z); if (sp) E.withShadow(sp, 0.4); E.textSprite(g, st.ev.done ? '😊' : '❗', 0.5, x, 1.95, z, { bg: '#fffaf2', color: '#e07a6a', border: '#f0c4c8', fs: 64 }); w.spots.push({ id: 'ev_' + kind, x, z, r: 2.2, wide: true, label: () => label, act: () => G.visitEvent(kind) }); };
   if (ev.visit === 'stall') {
