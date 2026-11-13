@@ -1,4 +1,14 @@
 <title>キッチングAIランド</title>
+<meta name="description" content="フェルトのまちで、じぶんのおみせを。買いもの・料理・おもてなしの、子ども向けおみせやさんゲーム。無料・課金なし・広告なし。">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ひなが堂">
+<meta property="og:title" content="キッチングAIランド｜フェルトのまちの おみせやさんゲーム">
+<meta property="og:description" content="フェルトのまちで、じぶんのおみせを。買いもの・料理・おもてなしの、子ども向けおみせやさんゲーム。無料・課金なし・広告なし。">
+<meta property="og:url" content="https://hinagado.github.io/kitching-ai-land/">
+<meta property="og:image" content="https://hinagado.github.io/kitching-ai-land/ogp.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
 <style>:root{
@@ -463,6 +473,12 @@ small.warn{color:#c0504a;font-weight:700}
 @media (max-height:560px){ .stage{aspect-ratio:auto;min-height:9em} }
 
 .card .job{color:#3f6b35;font-size:.9em}
+
+/* タイトルの「ほかの むりょうゲーム」（ひなが堂の 無料ゲームの ページへ） */
+.tmore{position:absolute;right:max(14px,env(safe-area-inset-right));bottom:max(12px,env(safe-area-inset-bottom));z-index:3;
+  font:700 calc(var(--s)*.8) var(--f);color:var(--ink);text-decoration:none;background:rgba(255,250,242,.92);
+  border:2px dashed var(--line);border-radius:999px;padding:.45em 1em;box-shadow:0 2px 6px rgba(0,0,0,.12)}
+.tmore:active{transform:scale(.97)}
 </style>
 
 <canvas id="c"></canvas>
@@ -497,6 +513,7 @@ small.warn{color:#c0504a;font-weight:700}
   </svg></div>
   <button class="tb" id="tbtn">タップして はじめる</button>
   <div id="tchoice" style="display:none"><button class="tb" id="tCont">つづきから</button><button class="tb ghost" id="tNew">はじめから</button></div>
+  <a class="tmore" id="tmore" href="https://hinagado.github.io/play/" target="_blank" rel="noopener">🎮 ほかの むりょうゲーム ›</a>
 </div>
 
 <!-- ゲーム中の 表示 -->
@@ -8402,7 +8419,7 @@ window.addEventListener('load', () => {
     $('#loading').style.display = 'none';
     G.loop();
   });
-  $('#title').addEventListener('click', (e) => { if (e.target.closest('#tchoice')) return; G.titleTap(); });
+  $('#title').addEventListener('click', (e) => { if (e.target.closest('#tchoice') || e.target.closest('#tmore')) return; G.titleTap(); });
   $('#tCont').addEventListener('click', (e) => { e.stopPropagation(); G.titleTap('continue'); });
   $('#tNew').addEventListener('click', (e) => {
     e.stopPropagation();
