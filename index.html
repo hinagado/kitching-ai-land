@@ -1,14 +1,3 @@
-<!doctype html>
-<html lang="ja">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="キッチングAI">
-<meta name="theme-color" content="#f3e2c7">
 <title>キッチングAIランド</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
@@ -475,8 +464,7 @@ small.warn{color:#c0504a;font-weight:700}
 
 .card .job{color:#3f6b35;font-size:.9em}
 </style>
-</head>
-<body>
+
 <canvas id="c"></canvas>
 
 <!-- タイトル -->
@@ -6986,7 +6974,7 @@ W.updateStaff = function (w, dt) {
 // ===== 画面の部品 =====
 const UI = {};
 const $ = (s) => document.querySelector(s);
-const yen = (n) => '¥' + Math.round(n).toLocaleString('ja-JP');
+const yen = (n) => Math.round(n).toLocaleString('ja-JP') + ' コイン';
 UI.icon = (name, cls = '') => {
   if (name === 'curry') return `<img class="ic ${cls}" src="${E.img.curry ? E.img.curry.toDataURL() : ''}" alt="">`;
   return ASSETS[name] ? `<img class="ic ${cls}" src="${ASSETS[name]}" alt="">` : '';
@@ -8436,18 +8424,18 @@ DATA.EVENTS = {
   festival: { name: 'しょうてんがいの おまつり', icon: '🏮', text: 'おまつり ひろばで おまつり！ おきゃくさんが 2にん ふえて、ひろばの やたいで しょくざいが もらえるよ', guests: 2, tip: 0.05, visit: 'stall', where: 'plaza', w: 2, first: 2 },
   sale:     { name: 'スーパーの おおうりだし', icon: '🏷️', text: 'スーパー ひだまりで ぜんぶ 3わり びき！ かいだめの チャンス', sale: 0.7, w: 3 },
   harvest:  { name: 'はたけの ほうさく', icon: '🌽', text: 'おひさまの おかげで はたけの やさいが 1にちぶん はやく そだったよ', harvest: true, w: 2, minDay: 3 },
-  critic:   { name: 'グルメ はかせが くる', icon: '🎩', text: 'きょう グルメ はかせが たべに くるよ。★3つの りょうりを だすと ごほうび 1500えん！', vip: 'critic', w: 2, minDay: 4 },
-  birthday: { name: 'おたんじょうびの おきゃくさん', icon: '🎂', text: 'きょうは おたんじょうびの おきゃくさんが くるよ。りょうりを だすと みんなで おいわい（ごほうび 800えん）', vip: 'birthday', w: 2, minDay: 3 },
+  critic:   { name: 'グルメ はかせが くる', icon: '🎩', text: 'きょう グルメ はかせが たべに くるよ。★3つの りょうりを だすと ごほうび 1500 コイン！', vip: 'critic', w: 2, minDay: 4 },
+  birthday: { name: 'おたんじょうびの おきゃくさん', icon: '🎂', text: 'きょうは おたんじょうびの おきゃくさんが くるよ。りょうりを だすと みんなで おいわい（ごほうび 800 コイン）', vip: 'birthday', w: 2, minDay: 3 },
   team:     { name: 'サッカー チームが くる', icon: '⚽', text: 'しあいの あとの サッカー チームが たべに くるよ。おきゃくさんが 3にん ふえる！', guests: 3, w: 2, minDay: 5 },
   treasure: { name: 'たからさがし', icon: '🎁', text: '町の どこかに プレゼントが 5こ かくれているよ。こうえん・みなと・えきの ほうを さがしてみよう', find: 'e_present', items: [[-88, -14], [96, -72], [-20, 58], [24, 70], [-44, -58]], reward: 'random', w: 2, minDay: 2 },
-  balloons: { name: 'ふうせん あつめ', icon: '🎈', text: 'こうえんに ふうせんが 6こ とんできたよ。ぜんぶ あつめると 1000えん！', find: 'balloon', items: [[-92, -6], [-80, -24], [-66, -4], [-58, -24], [-48, -14], [-74, -10]], reward: 'balloon', where: 'park', w: 2 },
-  cat:      { name: 'まいごの ねこ', icon: '🐈', text: 'まいごの ねこを さがしているよ。みなとの ほうで みたって。みつけたら ごほうび 800えん', find: 'c_cat', items: [[88, -79]], reward: 800, where: 'harbor', w: 2, minDay: 3 },
+  balloons: { name: 'ふうせん あつめ', icon: '🎈', text: 'こうえんに ふうせんが 6こ とんできたよ。ぜんぶ あつめると 1000 コイン！', find: 'balloon', items: [[-92, -6], [-80, -24], [-66, -4], [-58, -24], [-48, -14], [-74, -10]], reward: 'balloon', where: 'park', w: 2 },
+  cat:      { name: 'まいごの ねこ', icon: '🐈', text: 'まいごの ねこを さがしているよ。みなとの ほうで みたって。みつけたら ごほうび 800 コイン', find: 'c_cat', items: [[88, -79]], reward: 800, where: 'harbor', w: 2, minDay: 3 },
   truck:    { name: 'フードトラックが きた', icon: '🚚', text: 'みなとに フードトラック！ はなしかけると ひみつの レシピを 1つ おしえて くれるよ', visit: 'truck', where: 'harbor', w: 2, minDay: 4 },
   fishing:  { name: 'つりたいかい', icon: '🎣', text: 'みなとで つりたいかい。つりの おじいちゃんに はなしかけると さかなを わけて くれるよ', visit: 'fisher', where: 'harbor', w: 2 },
   ufo:      { name: 'ふしぎな UFO', icon: '🛸', text: 'こうえんの うえに ふしぎな UFO が いるよ！ ちかくで しらべてみよう', find: 'e_ufo', items: [[-70, -18]], reward: 1000, fly: true, where: 'park', w: 1, minDay: 5 },
   fireworks:{ name: 'はなび たいかい', icon: '🎆', text: 'こんやは はなび たいかい！ みんな うきうきで りょうりが 1わり たかく うれるよ', priceAll: 1.1, fireworks: true, w: 2, minDay: 4 },
-  school:   { name: 'がっこうから ちゅうもん', icon: '🏫', text: 'がっこうの せんせいから「おにぎり 3こ ほしい」って。おこめ 3こを もって がっこうへ いこう（ごほうび 1500えん）', visit: 'school', where: 'school', w: 2, minDay: 3 },
-  litter:   { name: 'こうえんの おそうじ', icon: '🧹', text: 'こうえんに ごみが おちているよ。4こ ひろうと ちょうないかいから 600えん', find: 'litter', items: [[-84, -4], [-60, -12], [-74, -24], [-52, -4]], reward: 600, where: 'park', w: 2 },
+  school:   { name: 'がっこうから ちゅうもん', icon: '🏫', text: 'がっこうの せんせいから「おにぎり 3こ ほしい」って。おこめ 3こを もって がっこうへ いこう（ごほうび 1500 コイン）', visit: 'school', where: 'school', w: 2, minDay: 3 },
+  litter:   { name: 'こうえんの おそうじ', icon: '🧹', text: 'こうえんに ごみが おちているよ。4こ ひろうと ちょうないかいから 600 コイン', find: 'litter', items: [[-84, -4], [-60, -12], [-74, -24], [-52, -4]], reward: 600, where: 'park', w: 2 },
   tv:       { name: 'テレビの しゅざい', icon: '📺', text: 'テレビの ひとが しゅざいに きたよ。おみせが にんきに なって チップが 1.5わり ふえる', tip: 0.15, w: 1, minDay: 6 },
   hanami:   { name: 'おはなみ', icon: '🌸', text: 'じんじゃの さくらが まんかい！ おきゃくさんが 1にん ふえて、おやつが 2わり たかく うれるよ', guests: 1, sweets: 0.2, w: 2, minDay: 2 },
 };
@@ -8505,11 +8493,11 @@ G.applyEventPlan = function () {
 G.vipServed = function (plan, stars, t) {
   const st = G.state;
   if (plan.vip === 'critic') {
-    if (stars >= 3) { st.money += 1500; Audio.se('level'); setTimeout(() => UI.banner('🎩 グルメ はかせ「すばらしい！」', 'ごほうび 1500えん と はかせの おすみつき！', 3000), 900); st.ev && (st.ev.done = true); }
+    if (stars >= 3) { st.money += 1500; Audio.se('level'); setTimeout(() => UI.banner('🎩 グルメ はかせ「すばらしい！」', 'ごほうび 1500 コイン と はかせの おすみつき！', 3000), 900); st.ev && (st.ev.done = true); }
     else setTimeout(() => UI.toast('グルメ はかせ「おいしいけど、つぎは ★3つを たのしみに しているよ」'), 900);
   } else if (plan.vip === 'birthday') {
     st.money += 800; Audio.se('level'); G.hearts(t); setTimeout(() => G.hearts(t), 500);
-    setTimeout(() => UI.banner('🎂 おたんじょうび おめでとう！', 'みんなで うたって おいわい。ごほうび 800えん', 3000), 900); st.ev && (st.ev.done = true);
+    setTimeout(() => UI.banner('🎂 おたんじょうび おめでとう！', 'みんなで うたって おいわい。ごほうび 800 コイン', 3000), 900); st.ev && (st.ev.done = true);
   }
 };
 G.evReward = function (r) {
@@ -8550,7 +8538,7 @@ G.visitEvent = function (kind) {
     st.ev.done = true; Audio.se('done'); UI.banner('🎣 たいりょうだ！', 'さかな 3こ と さけ 2こを わけて もらったよ', 3000);
   } else if (kind === 'truck') {
     const L = G.devList();
-    if (!L.length) { st.money += 1000; st.ev.done = true; UI.banner('🚚 フードトラック', 'もう ぜんぶ しってるね！ おれいに 1000えん', 3000); }
+    if (!L.length) { st.money += 1000; st.ev.done = true; UI.banner('🚚 フードトラック', 'もう ぜんぶ しってるね！ おれいに 1000 コイン', 3000); }
     else {
       const [rid] = L[st.day % L.length]; st.unlocked.push(rid); st.ev.done = true; Audio.se('level');
       UI.banner(`${UI.icon(DATA.RECIPES[rid].icon, 'big')} ひみつの レシピを おそわった！`, `「${DATA.RECIPES[rid].name}」が メニューに なったよ`, 3200); G.makePlanKeep();
@@ -8558,7 +8546,7 @@ G.visitEvent = function (kind) {
   } else if (kind === 'school') {
     if (G.avail('rice') < 3) { Audio.se('ng'); UI.toast('おこめが 3こ いるよ。スーパーで かってこよう'); return; }
     for (let i = 0; i < 3; i++) { const id = (st.stock.rice || 0) > 0 ? 'rice' : 'g_rice'; st.stock[id]--; }
-    st.money += 1500; st.ev.done = true; Audio.se('level'); UI.banner('🏫 せんせい「ありがとう！ みんな よろこぶよ」', 'おにぎりを とどけて ごほうび 1500えん', 3000);
+    st.money += 1500; st.ev.done = true; Audio.se('level'); UI.banner('🏫 せんせい「ありがとう！ みんな よろこぶよ」', 'おにぎりを とどけて ごほうび 1500 コイン', 3000);
   }
   W.refreshEvent(G.worlds.town); G.save(); G.recalc();
 };
@@ -8693,5 +8681,3 @@ G.voice = function (text, who, force) {
   Audio.babble(text, Math.round(60 + v.pitch * 12), v.rate);
 };
 </script>
-</body>
-</html>
