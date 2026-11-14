@@ -544,6 +544,11 @@ body,button,input{word-break:keep-all;overflow-wrap:break-word;line-break:strict
 .panel h2 .wal{margin-right:9.2em}  /* v9: とじる ボタンに かさならない */
 .smcel{position:fixed;right:3vw;bottom:-30vh;height:min(26vh,180px);z-index:61;pointer-events:none;filter:drop-shadow(0 6px 6px rgba(80,50,30,.25));animation:smcel 3.4s cubic-bezier(.3,1.4,.5,1) forwards}
 @keyframes smcel{0%{transform:translateY(0) rotate(-10deg)}22%{transform:translateY(-42vh) rotate(6deg)}35%{transform:translateY(-38vh) rotate(-4deg)}48%{transform:translateY(-42vh) rotate(4deg)}80%{transform:translateY(-40vh) rotate(0)}100%{transform:translateY(10vh) rotate(-8deg)}}
+
+/* かんたんモード */
+.easyb{margin-left:.5em;border:2px solid #9cc98a;background:#fff;color:#3f6b35;border-radius:999px;padding:.1em .7em;font:inherit;font-size:.85em;font-weight:900;cursor:pointer}
+.easyb.on{background:#7fae6b;color:#fff;border-color:#7fae6b}
+.panel.cook.easy .ings .ing:not(.hint):not(.on),.panel.cook.easy .acts .actb:not(.hint){opacity:.38}
 </style>
 </head>
 <body>
@@ -7457,15 +7462,23 @@ UI.cookRecipe = function (guest) {
   while (pool.length < Math.min(8, Object.keys(r.need).length + 3)) { seed = (seed * 31 + 11) % 997; const c = extra[seed % extra.length]; if (!pool.includes(c)) pool.push(c); }
   pool.sort((a, b) => (a > b ? 1 : -1));
   const disp = (id) => used[id] || id;
+  // かんたんモード: ざいりょうを えらぶ まえは ただしい ざいりょう、えらんだら ただしい さぎょうを 光らせる
+  const easy = () => !!G.state.easy;
+  const want = () => (r.steps[stepI] ? (r.steps[stepI][0] || 'plate') : null);
+  const hiIng = (id) => (r.steps[stepI] && want() === id && (wrong >= 2 || (easy() && pick !== id)) ? 'hint' : '');
+  const hiAct = (a) => (r.steps[stepI] && r.steps[stepI][1] === a && (wrong >= 2 || (easy() && pick === want())) ? 'hint' : '');
   const render = (msg) => {
     const step = r.steps[stepI];
     const p = UI.open(`<h2>${r.name}を つくろう <small>${guest.contest ? '🏆 コンテスト' : (guest.table.id + 1) + 'ばん テーブル'}</small></h2>
       <div class="cookwrap"><div class="cmemo"><div class="ct">メモ（レシピ）<b class="cstep">${Math.min(stepI + 1, r.steps.length)} / ${r.steps.length}</b></div><ol>${r.steps.map(([i, a], k) => `<li class="${k < stepI ? 'done' : k === stepI ? 'now' : ''}">${k < stepI ? '✔ ' : ''}${i ? DATA.ING[i].name + 'を ' : 'おさらに '}<b>${DATA.ACT[a].name}</b></li>`).join('')}</ol></div>
       <div class="cmain"><div class="stage" id="stage" style="${ASSETS.st_board ? `background-image:url(${ASSETS[{ arau: 'st_sink', kiru: 'st_board', yaku: 'st_pan', niru: 'st_pot', mazeru: 'st_bowl', nigiru: 'st_board', moru: 'st_plate' }[r.steps[stepI] ? r.steps[stepI][1] : 'moru']] || ASSETS.st_board})` : ''}">${pick ? (pick === 'plate' ? '<div class="plate">🍽️</div>' : UI.ingIcon(disp(pick), 'huge')) : '<div class="ph">しょくざいを えらんでね</div>'}<div class="prog"><i id="pg"></i></div></div>
         <div class="msg" id="cmsg">${msg || (pick ? 'つぎは さぎょうを えらぼう' : 'メモを みて、しょくざいを えらぼう')}</div></div></div>
-      <div class="lbl">しょくざい</div><div class="ings">${pool.map((id) => `<button class="ing ${pick === id ? 'on' : ''} ${wrong >= 2 && r.steps[stepI] && (r.steps[stepI][0] || 'plate') === id ? 'hint' : ''}" data-id="${id}">${UI.ingIcon(disp(id))}<span>${DATA.ING[disp(id)].name}</span></button>`).join('')}<button class="ing ${pick === 'plate' ? 'on' : ''} ${wrong >= 2 && r.steps[stepI] && r.steps[stepI][0] === null ? 'hint' : ''}" data-id="plate"><span class="plate s">🍽️</span><span>おさら</span></button></div>
-      <div class="lbl">さぎょう</div><div class="acts">${DATA.ACT_ORDER.map((a) => `<button class="actb ${wrong >= 2 && r.steps[stepI] && r.steps[stepI][1] === a ? 'hint' : ''}" data-a="${a}">${UI.ico('i_' + a, DATA.ACT[a].emoji)}${DATA.ACT[a].name}</button>`).join('')}</div>`,
-      { cls: 'wide cook', noClose: true, nav: (k) => { if (k === 'ok' && game) game.tap(); } });
+      <div class="lbl">しょくざい</div><div class="ings">${pool.map((id) => `<button class="ing ${pick === id ? 'on' : ''} ${hiIng(id)}" data-id="${id}">${UI.ingIcon(disp(id))}<span>${DATA.ING[disp(id)].name}</span></button>`).join('')}<button class="ing ${pick === 'plate' ? 'on' : ''} ${hiIng('plate')}" data-id="plate"><span class="plate s">🍽️</span><span>おさら</span></button></div>
+      <div class="lbl">さぎょう</div><div class="acts">${DATA.ACT_ORDER.map((a) => `<button class="actb ${hiAct(a)}" data-a="${a}">${UI.ico('i_' + a, DATA.ACT[a].emoji)}${DATA.ACT[a].name}</button>`).join('')}</div>`,
+      { cls: 'wide cook' + (easy() ? ' easy' : ''), noClose: true, nav: (k) => { if (k === 'ok' && game) game.tap(); } });
+    p.querySelector('.cmemo .ct').insertAdjacentHTML('beforeend', `<button class="easyb ${easy() ? 'on' : ''}" id="easyb">🔰 かんたん ${easy() ? 'オン' : 'オフ'}</button>`);
+    if (easy()) { const h = p.querySelector('.acts .hint') || p.querySelector('.ings .hint'); if (h) setTimeout(() => { if (h.isConnected) h.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }, 60); } // 光った ボタンが 見える ところへ
+    p.querySelector('#easyb').onclick = (e) => { e.stopPropagation(); if (busy) return; G.state.easy = !easy(); Audio.se('tap'); G.save(); render(easy() ? '🔰 ひかっている ボタンを じゅんばんに おそう' : ''); };
     p.querySelectorAll('.ing').forEach((b) => b.onclick = () => { if (busy) return; pick = b.dataset.id; Audio.se('tap'); render(); });
     p.querySelectorAll('.actb').forEach((b) => b.onclick = () => doAct(b.dataset.a));
     UI.cooking = true;
